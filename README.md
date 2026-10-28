@@ -23,7 +23,11 @@ Repere publice consultate pentru poziționarea propunerii: [Școala de Joacă](h
 
 ## Funcționare
 
-Site static, fără servicii backend sau dependențe runtime. Calculatorul păstrează numai opțiunile nesensibile în localStorage. Copierea mesajului este locală; contactul se realizează manual pe Instagram, fără simularea unei rezervări. Pagina de confidențialitate descrie stocarea locală și găzduirea GitHub Pages.
+Site static, fără servicii backend sau dependențe runtime. Fiecare dintre cele nouă terapii are propria pagină HTML la `terapii/<slug>/`, cu adresă canonică, descriere, direcții de lucru, întrebări frecvente și navigare între servicii. Meniul „Terapii” și cardurile de pe prima pagină duc direct la aceste pagini.
+
+`content/therapies.mjs` este sursa unică pentru denumiri, rezumate, rute și conținutul paginilor. `scripts/render-site.mjs`, importat de build, generează prima pagină, paginile de terapie și sitemap-ul. Antetul și subsolul folosesc structura comună din `public/index.html`. Fișierele din `public` cu marcaje HTML sunt șabloane; previzualizarea se face din `dist`, după build.
+
+Meniul de terapii folosește un element HTML `details`; JavaScript adaugă închiderea la Escape, click în exterior și selectarea unui link. Pe mobil, lista poate fi derulată fără a depăși înălțimea ecranului. Calculatorul păstrează numai opțiunile nesensibile în localStorage. Copierea mesajului este locală; contactul se realizează manual pe Instagram, fără simularea unei rezervări. Pagina de confidențialitate descrie stocarea locală și găzduirea GitHub Pages.
 
 ## Verificare și publicare
 
@@ -39,7 +43,8 @@ Build-ul refuză un working tree cu modificări necomise. `dist/build-info.json`
 Verificare browser (după pornirea unui server pentru `dist`):
 
 ```sh
-TARGET_URL=http://127.0.0.1:4173 npm run verify:browser
+TARGET_URL=http://127.0.0.1:4174 npm run verify:browser
+TARGET_URL=http://127.0.0.1:4174 npm run verify:pages
 ```
 
 `CHROMIUM_PATH` poate indica un executabil Chromium instalat; `EXPECTED_COMMIT` verifică build-ul vizitat. Dovezile și capturile sunt salvate în `artifacts/`, excluse din Git. În mediile minimale Linux sunt necesare bibliotecile native Chromium.

@@ -100,29 +100,51 @@ function setText(element, value) {
 function setupNavigation() {
   const toggle = document.querySelector("#menu-toggle");
   const navigation = document.querySelector("#site-nav");
+  const therapies = document.querySelector("#therapy-menu");
+  const therapyToggle = document.querySelector("#therapy-menu-toggle");
   if (!toggle || !navigation) return;
 
+  const closeTherapies = () => {
+    if (therapies) therapies.open = false;
+    therapyToggle?.setAttribute("aria-expanded", "false");
+  };
   const setOpen = (isOpen) => {
     toggle.setAttribute("aria-expanded", String(isOpen));
     toggle.setAttribute("aria-label", isOpen ? "Închide meniul" : "Deschide meniul");
     navigation.classList.toggle("is-open", isOpen);
+    if (!isOpen) closeTherapies();
   };
 
   setOpen(false);
   toggle.addEventListener("click", () => {
     setOpen(toggle.getAttribute("aria-expanded") !== "true");
   });
-
+  therapies?.addEventListener("toggle", () => {
+    therapyToggle?.setAttribute("aria-expanded", String(therapies.open));
+  });
+  therapies?.addEventListener("focusout", (event) => {
+    if (event.relatedTarget && !therapies.contains(event.relatedTarget)) closeTherapies();
+  });
   navigation.addEventListener("click", (event) => {
     if (event.target.closest("a")) setOpen(false);
   });
-
+  document.addEventListener("click", (event) => {
+    if (therapies?.open && !therapies.contains(event.target)) closeTherapies();
+    if (toggle.getAttribute("aria-expanded") === "true" && !navigation.contains(event.target) && !toggle.contains(event.target)) setOpen(false);
+  });
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && toggle.getAttribute("aria-expanded") === "true") {
+    if (event.key !== "Escape") return;
+    if (therapies?.open) {
+      event.preventDefault();
+      closeTherapies();
+      therapyToggle?.focus();
+    } else if (toggle.getAttribute("aria-expanded") === "true") {
+      event.preventDefault();
       setOpen(false);
       toggle.focus();
     }
   });
+  window.matchMedia("(min-width: 901px)").addEventListener("change", () => setOpen(false));
 }
 
 function readSavedSelection(storage) {

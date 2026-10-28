@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/app.test.mjs",
+    "test": "node --test tests/app.test.mjs tests/pages.test.mjs",
     "build": "node scripts/build.mjs",
-    "verify:browser": "node tests/browser.mjs"
+    "verify:browser": "node tests/browser.mjs",
+    "verify:pages": "node tests/pages-browser.mjs"
   },
   "devDependencies": { "@playwright/test": "1.58.2" }
 }
