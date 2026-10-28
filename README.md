@@ -1,12 +1,14 @@
-# Smart Terapy
+# Smart Terapy Educational
 
-Site de prezentare în limba română pentru Smart Terapy, cu publicare pe GitHub Pages.
+Site de prezentare în limba română pentru Smart Terapy Educational, cu publicare pe GitHub Pages.
 
 ## Conținut și proveniență
 
 Numele **Smart Terapy** și activitățile generale (ateliere creative și terapeutice pentru copii, activități educaționale pentru școli și grădinițe în programul Școala Altfel) provin din metadatele publice ale [profilului Instagram](https://www.instagram.com/smart_terapy_educational/), consultat la 28 octombrie 2026. Fotografia de profil provine din același cont; nu sunt folosite fotografii ale unor copii. Ilustrațiile site-ului sunt originale, vectoriale. Fonturile DM Sans și Fraunces sunt distribuite cu licențele OFL incluse în `public/assets`.
 
-Oferta detaliată este o **propunere comercială**, etichetată explicit pe site, nu o listă de servicii sau prețuri confirmate de client. Nu au fost inventate calificări, recenzii, adrese, telefoane ori rezultate terapeutice.
+Numele complet **Smart Terapy Educational** și cele nouă servicii de terapie au fost precizate ulterior de client, prin imaginea furnizată în conversație: ABA (Applied Behavior Analysis), PECS (Picture Exchange Communication System), logopedie, terapie ocupațională, terapie de integrare senzorială, ludoterapie, terapie cognitiv-comportamentală, meloterapie și art-terapie, terapie de grup pentru abilități sociale. Acestea sunt prezentate în secțiunea `#terapii`, cu descrieri concise și fără promisiuni de rezultate. Formulările generale au fost verificate și față de [prezentarea CDC a tipurilor de intervenții](https://www.cdc.gov/autism/treatment/index.html). Nu au fost inventate calificări, recenzii, adrese, telefoane ori rezultate terapeutice.
+
+Oferta detaliată de **ateliere creative** și tarifele aferente rămân o **propunere comercială**, etichetată explicit pe site. Calculatorul privește exclusiv aceste ateliere. Tarifele ședințelor de terapie și logopedie se comunică direct de echipă.
 
 | Program propus | Tarif propus | Format propus |
 | --- | --- | --- |

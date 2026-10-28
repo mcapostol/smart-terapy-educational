@@ -14,6 +14,17 @@ const LIBRARY_PATHS = [
   "/srv/projects/wildora/.tools/audio/root/usr/lib/x86_64-linux-gnu",
 ];
 const ARTIFACTS_DIR = path.resolve("artifacts");
+const EXPECTED_THERAPY_TITLES = [
+  "ABA",
+  "PECS",
+  "Logopedia",
+  "Terapia ocupațională",
+  "Terapia de integrare senzorială",
+  "Ludoterapia",
+  "Terapia cognitiv-comportamentală",
+  "Meloterapia și art-terapia",
+  "Terapia de grup pentru abilități sociale",
+];
 
 const browserFailures = [];
 const checks = [];
@@ -51,12 +62,20 @@ function attachDiagnostics(page, label) {
   });
 }
 
+function normalizeText(value) {
+  return value.replace(/\s+/g, " ").trim();
+}
+
 async function openSite(page) {
   const response = await page.goto(TARGET_URL, { waitUntil: "networkidle" });
   assert(response, `No navigation response for ${TARGET_URL}`);
   assert(response.ok(), `Navigation failed with HTTP ${response.status()} at ${TARGET_URL}`);
   await page.evaluate(() => document.fonts.ready);
-  assert.match(await page.title(), /^Smart Terapy\b/, "The page title must start with Smart Terapy");
+  assert.match(
+    normalizeText(await page.title()),
+    /smart terapy educational/i,
+    "The page title must include Smart Terapy Educational",
+  );
 }
 
 async function assertNoHorizontalOverflow(page, label) {
@@ -70,6 +89,125 @@ async function assertNoHorizontalOverflow(page, label) {
     `${label} has horizontal overflow: ${JSON.stringify(metrics)}`,
   );
   recordCheck(`${label} has no horizontal overflow`, metrics);
+}
+
+async function assertTherapyContent(page) {
+  const brandText = normalizeText((await page.locator(".site-header .brand").textContent()) || "");
+  assert.equal(brandText.toLocaleLowerCase("ro"), "smart terapy educational");
+
+  const therapySection = page.locator("#terapii");
+  assert.equal(await therapySection.count(), 1, "The #terapii section must exist exactly once");
+
+  const cards = therapySection.locator(".therapy-card");
+  assert.equal(await cards.count(), 9, "The therapy section must contain exactly nine cards");
+
+  const renderedTitles = await cards.locator("h3").evaluateAll((headings) =>
+    headings.map((heading) => heading.textContent.replace(/\s+/g, " ").trim()),
+  );
+  assert.deepEqual(renderedTitles, EXPECTED_THERAPY_TITLES);
+
+  const expandedNames = await cards.locator(".therapy-fullname").evaluateAll((elements) =>
+    elements.map((element) => element.textContent.replace(/\s+/g, " ").trim()),
+  );
+  assert.equal(expandedNames.length, 2, "Only ABA and PECS must have a separate expanded name");
+  assert.match(expandedNames[0], /Applied Behavior Analysis/i);
+  assert.match(expandedNames[1], /Picture Exchange Communication System/i);
+  assert.equal(
+    await cards.nth(0).locator(".therapy-fullname").count(),
+    1,
+    "ABA must have its expanded name in .therapy-fullname",
+  );
+  assert.equal(
+    await cards.nth(1).locator(".therapy-fullname").count(),
+    1,
+    "PECS must have its expanded name in .therapy-fullname",
+  );
+
+  const pageText = normalizeText((await page.locator("body").textContent()) || "");
+  assert.doesNotMatch(pageText, /site-ul nu prezintă servicii clinice/i);
+  recordCheck("therapy content contract", { brandText, renderedTitles, expandedNames });
+}
+
+async function assertTherapyLayout(page, width) {
+  const layout = await page.locator("#terapii").evaluate((section, desktopWidth) => {
+    const tolerance = 1;
+    const cards = [...section.querySelectorAll(".therapy-card")];
+    const rectangles = cards.map((card) => {
+      const rect = card.getBoundingClientRect();
+      return {
+        left: rect.left,
+        right: rect.right,
+        top: rect.top,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height,
+      };
+    });
+    const overflowingText = cards.flatMap((card, cardIndex) =>
+      [...card.querySelectorAll("h3, p")]
+        .filter((element) => element.scrollWidth > element.clientWidth + tolerance)
+        .map((element) => ({
+          cardIndex,
+          tag: element.tagName.toLowerCase(),
+          text: element.textContent.replace(/\s+/g, " ").trim(),
+          clientWidth: element.clientWidth,
+          scrollWidth: element.scrollWidth,
+        })),
+    );
+    const outsideViewport = rectangles
+      .map((rect, cardIndex) => ({ cardIndex, ...rect }))
+      .filter((rect) => rect.width <= 0 || rect.height <= 0 || rect.left < -tolerance || rect.right > innerWidth + tolerance);
+    const overlaps = [];
+    for (let firstIndex = 0; firstIndex < rectangles.length; firstIndex += 1) {
+      for (let secondIndex = firstIndex + 1; secondIndex < rectangles.length; secondIndex += 1) {
+        const first = rectangles[firstIndex];
+        const second = rectangles[secondIndex];
+        const horizontalOverlap = Math.min(first.right, second.right) - Math.max(first.left, second.left);
+        const verticalOverlap = Math.min(first.bottom, second.bottom) - Math.max(first.top, second.top);
+        if (horizontalOverlap > tolerance && verticalOverlap > tolerance) {
+          overlaps.push({ firstIndex, secondIndex, horizontalOverlap, verticalOverlap });
+        }
+      }
+    }
+
+    let headerOverlap = null;
+    if (desktopWidth > 900) {
+      const brand = document.querySelector(".site-header .brand")?.getBoundingClientRect();
+      const navigation = document.querySelector(".site-header #site-nav")?.getBoundingClientRect();
+      if (!brand || !navigation) {
+        headerOverlap = { missing: true };
+      } else {
+        const horizontalOverlap = Math.min(brand.right, navigation.right) - Math.max(brand.left, navigation.left);
+        const verticalOverlap = Math.min(brand.bottom, navigation.bottom) - Math.max(brand.top, navigation.top);
+        headerOverlap = {
+          brand: { left: brand.left, right: brand.right, top: brand.top, bottom: brand.bottom },
+          navigation: {
+            left: navigation.left,
+            right: navigation.right,
+            top: navigation.top,
+            bottom: navigation.bottom,
+          },
+          intersects: horizontalOverlap > tolerance && verticalOverlap > tolerance,
+        };
+      }
+    }
+
+    return { cardCount: cards.length, overflowingText, outsideViewport, overlaps, headerOverlap };
+  }, width);
+
+  assert.equal(layout.cardCount, 9, `${width}px must render all nine therapy cards`);
+  assert.deepEqual(layout.overflowingText, [], `${width}px therapy text overflows: ${JSON.stringify(layout.overflowingText)}`);
+  assert.deepEqual(layout.outsideViewport, [], `${width}px therapy cards leave the viewport: ${JSON.stringify(layout.outsideViewport)}`);
+  assert.deepEqual(layout.overlaps, [], `${width}px therapy cards overlap: ${JSON.stringify(layout.overlaps)}`);
+  if (width > 900) {
+    assert(layout.headerOverlap && !layout.headerOverlap.missing, `${width}px header brand or navigation is missing`);
+    assert.equal(
+      layout.headerOverlap.intersects,
+      false,
+      `${width}px header brand intersects navigation: ${JSON.stringify(layout.headerOverlap)}`,
+    );
+  }
+  recordCheck(`therapy layout ${width}px`, layout);
 }
 
 function moneyNumber(text) {
@@ -124,6 +262,7 @@ try {
   attachDiagnostics(page, "desktop-mobile-primary");
 
   await openSite(page);
+  await assertTherapyContent(page);
   await assertNoHorizontalOverflow(page, "desktop 1440px");
   await page.screenshot({ path: path.join(ARTIFACTS_DIR, "desktop.png"), fullPage: true });
   recordCheck("desktop screenshot", { path: "artifacts/desktop.png" });
@@ -132,6 +271,15 @@ try {
     await page.setViewportSize({ width, height: width <= 390 ? 844 : 1000 });
     await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
     await assertNoHorizontalOverflow(page, `responsive ${width}px`);
+    await assertTherapyLayout(page, width);
+    if (width === 390) {
+      await page.locator("#terapii").screenshot({ path: path.join(ARTIFACTS_DIR, "therapies-mobile.png") });
+      recordCheck("mobile therapy screenshot", { path: "artifacts/therapies-mobile.png" });
+    }
+    if (width === 1440) {
+      await page.locator("#terapii").screenshot({ path: path.join(ARTIFACTS_DIR, "therapies-desktop.png") });
+      recordCheck("desktop therapy screenshot", { path: "artifacts/therapies-desktop.png" });
+    }
   }
 
   await page.setViewportSize({ width: 390, height: 844 });

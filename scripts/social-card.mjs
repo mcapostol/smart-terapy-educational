@@ -8,7 +8,7 @@ try {
     for (const child of [...document.querySelector('main').children]) if (!child.classList.contains('hero')) child.remove();
     document.querySelector('.hero').style.cssText = 'width:1100px;height:630px;margin:auto;padding:25px 0;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:0';
     document.querySelector('.hero-actions').remove();
-    document.querySelector('.hero-footnote').innerHTML = '<p style="font-family:Georgia,serif;font-size:26px;color:#4b6043">smart terapy</p>';
+    document.querySelector('.hero-footnote').innerHTML = '<p style="font-family:Georgia,serif;font-size:26px;color:#4b6043">smart terapy educational</p>';
     document.querySelector('h1').style.fontSize = '69px';
   });
   await page.screenshot({ path: 'public/assets/social-card.png' });
