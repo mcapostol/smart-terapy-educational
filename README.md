@@ -8,6 +8,8 @@ Numele **Smart Terapy** și activitățile generale (ateliere creative și terap
 
 Numele complet **Smart Terapy Educational** și cele nouă servicii de terapie au fost precizate ulterior de client, prin imaginea furnizată în conversație: ABA (Applied Behavior Analysis), PECS (Picture Exchange Communication System), logopedie, terapie ocupațională, terapie de integrare senzorială, ludoterapie, terapie cognitiv-comportamentală, meloterapie și art-terapie, terapie de grup pentru abilități sociale. Acestea sunt prezentate în secțiunea `#terapii`, cu descrieri concise și fără promisiuni de rezultate. Formulările generale au fost verificate și față de [prezentarea CDC a tipurilor de intervenții](https://www.cdc.gov/autism/treatment/index.html). Nu au fost inventate calificări, recenzii, adrese, telefoane ori rezultate terapeutice.
 
+Datele operatorului și ale sediului profesional au fost transcrise din certificatul de înregistrare furnizat de client: Badea R. Mihaela-Cristina Persoană Fizică Autorizată, CUI 51852961, Reg. Com. F2025018416009, Strada Elena Caragiani nr. 11, camera 3, bl. 2H, sc. A, et. 3, ap. 15, Sector 1, București. Adresa este prezentată ca sediu profesional, fără a o echivala cu locul desfășurării tuturor activităților. Imaginea documentului nu este publicată în site.
+
 Oferta detaliată de **ateliere creative** și tarifele aferente rămân o **propunere comercială**, etichetată explicit pe site. Calculatorul privește exclusiv aceste ateliere. Tarifele ședințelor de terapie și logopedie se comunică direct de echipă.
 
 | Program propus | Tarif propus | Format propus |
