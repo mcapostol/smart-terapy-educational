@@ -1,3 +1,5 @@
+import { CONTACT_EMAIL, buildContactMessage } from "./contact.js";
+
 const WORKSHOPS = Object.freeze({
   creativ: Object.freeze({ label: "Atelier creativ", rate: 55, min: 6, max: 20, unit: "copil" }),
   senzorial: Object.freeze({ label: "Atelier senzorial", rate: 60, min: 6, max: 20, unit: "copil" }),
@@ -322,8 +324,69 @@ function setupCalculator() {
   render();
 }
 
+function setupContactForm() {
+  const form = document.querySelector("#contact-form");
+  if (!form) return;
+  const fields = Object.fromEntries(["name", "email", "service", "message"].map(name => [name, form.elements.namedItem(name)]));
+  const draft = document.querySelector("#contact-draft");
+  const preview = document.querySelector("#contact-preview");
+  const emailLink = document.querySelector("#contact-open-email");
+  const status = document.querySelector("#contact-status");
+  const copyStatus = document.querySelector("#contact-copy-status");
+  const clearDraft = () => {
+    draft.hidden = true;
+    preview.value = "";
+    emailLink.href = `mailto:${CONTACT_EMAIL}`;
+    setText(status, "");
+    setText(copyStatus, "");
+  };
+  form.noValidate = true;
+  form.addEventListener("input", event => {
+    clearDraft();
+    const name = event.target.name;
+    if (fields[name]) {
+      fields[name].removeAttribute("aria-invalid");
+      setText(document.querySelector(`#contact-${name}-error`), "");
+    }
+  });
+  form.addEventListener("submit", event => {
+    event.preventDefault();
+    clearDraft();
+    const result = buildContactMessage(Object.fromEntries(Object.entries(fields).map(([name, field]) => [name, field.value])));
+    for (const [name, field] of Object.entries(fields)) {
+      const error = result.ok ? "" : result.errors[name] || "";
+      field.setAttribute("aria-invalid", String(Boolean(error)));
+      setText(document.querySelector(`#contact-${name}-error`), error);
+    }
+    if (!result.ok) {
+      fields[Object.keys(result.errors)[0]]?.focus();
+      return;
+    }
+    emailLink.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(result.subject)}&body=${encodeURIComponent(result.body.replace(/\r?\n/g, "\r\n"))}`;
+    preview.value = `Către: ${CONTACT_EMAIL}\nSubiect: ${result.subject}\n\n${result.body}`;
+    draft.hidden = false;
+    setText(status, "Mesajul este pregătit. Deschide aplicația de e-mail și trimite-l de acolo.");
+    emailLink.focus({ preventScroll: true });
+    draft.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
+  document.querySelector("#contact-copy").addEventListener("click", async () => {
+    if (!preview.value) return;
+    let copied = false;
+    try {
+      await navigator.clipboard.writeText(preview.value);
+      copied = true;
+    } catch {
+      preview.focus();
+      preview.select();
+      try { copied = document.execCommand("copy"); } catch { copied = false; }
+    }
+    setText(copyStatus, copied ? "Mesaj copiat. Îl poți lipi în e-mailul către echipă." : "Selectează și copiază manual mesajul de mai sus.");
+  });
+}
+
 if (typeof document !== "undefined") {
   setupNavigation();
   setupCalculator();
+  setupContactForm();
 }
 

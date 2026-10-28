@@ -27,6 +27,8 @@ Site static, fără servicii backend sau dependențe runtime. Fiecare dintre cel
 
 `content/therapies.mjs` este sursa unică pentru denumiri, rezumate, rute și conținutul paginilor. `scripts/render-site.mjs`, importat de build, generează prima pagină, paginile de terapie și sitemap-ul. Antetul și subsolul folosesc structura comună din `public/index.html`. Fișierele din `public` cu marcaje HTML sunt șabloane; previzualizarea se face din `dist`, după build.
 
+Formularul de contact pregătește local un e-mail către `contact@smartterapy.ro`, cu nume, adresă de răspuns, serviciu opțional și mesaj. Validează câmpurile, oferă link `mailto:` și copiere cu variantă manuală; utilizatorul trimite e-mailul din aplicația sa. Formularul nu afișează confirmări fictive de livrare și nu stochează datele personale în localStorage. `public/contact.js` conține validarea și compunerea mesajului, importate de `public/app.js`. Pentru trimitere directă din browser este necesar ulterior un endpoint configurat; [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages) găzduiește fișiere statice. Publicarea adresei nu creează și nu verifică existența căsuței poștale.
+
 Meniul de terapii folosește un element HTML `details`; JavaScript adaugă închiderea la Escape, click în exterior și selectarea unui link. Pe mobil, lista poate fi derulată fără a depăși înălțimea ecranului. Calculatorul păstrează numai opțiunile nesensibile în localStorage. Copierea mesajului este locală; contactul se realizează manual pe Instagram, fără simularea unei rezervări. Pagina de confidențialitate descrie stocarea locală și găzduirea GitHub Pages.
 
 ## Verificare și publicare
@@ -45,6 +47,7 @@ Verificare browser (după pornirea unui server pentru `dist`):
 ```sh
 TARGET_URL=http://127.0.0.1:4174 npm run verify:browser
 TARGET_URL=http://127.0.0.1:4174 npm run verify:pages
+TARGET_URL=http://127.0.0.1:4174 npm run verify:contact
 ```
 
 `CHROMIUM_PATH` poate indica un executabil Chromium instalat; `EXPECTED_COMMIT` verifică build-ul vizitat. Dovezile și capturile sunt salvate în `artifacts/`, excluse din Git. În mediile minimale Linux sunt necesare bibliotecile native Chromium.
