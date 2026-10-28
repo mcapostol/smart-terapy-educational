@@ -1,0 +1,12 @@
+{
+  "name": "smart-terapy-educational",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/app.test.mjs",
+    "build": "node scripts/build.mjs",
+    "verify:browser": "node tests/browser.mjs"
+  },
+  "devDependencies": { "@playwright/test": "1.58.2" }
+}

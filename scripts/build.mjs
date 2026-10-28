@@ -1,0 +1,10 @@
+import { cp, mkdir, writeFile } from 'node:fs/promises';
+import { execFileSync } from 'node:child_process';
+const git = (...args) => execFileSync('git', args, { encoding: 'utf8' }).trim();
+if (git('status', '--porcelain')) throw new Error('Build requires a clean committed working tree.');
+const commit = git('rev-parse', 'HEAD');
+await mkdir('dist', { recursive: true });
+await cp('public', 'dist', { recursive: true });
+await writeFile('dist/.nojekyll', '');
+await writeFile('dist/build-info.json', JSON.stringify({ commit, builtAt: new Date().toISOString() }, null, 2));
+console.log(`Built Smart Terapy from ${commit}`);
