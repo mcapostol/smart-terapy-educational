@@ -29,7 +29,7 @@ try {
   page.on('response', response => { if (response.status() >= 400) failures.push(`${response.status()} ${response.url()}`); });
   assert((await page.goto(root.href, { waitUntil: 'networkidle' })).ok());
   await page.evaluate(() => document.fonts.ready);
-  assert.equal(await page.locator('#contact-service option').count(), 13);
+  assert.equal(await page.locator('#contact-service option').count(), 14);
   assert.equal(await page.locator('#contact-draft').isVisible(), false);
 
   for (const width of [320, 390, 768, 1024, 1440]) {
@@ -100,6 +100,32 @@ try {
   assert.equal(await reopened.locator('#contact-form').count(), 1);
   assert.equal(await reopened.locator('.footer-email').getAttribute('href'), 'mailto:contact@smartterapy.ro');
   record('contact remains available after refresh, reopen and therapy navigation');
+
+  await page.locator('#remember-estimate').check();
+  await page.fill('#participants', '13');
+  await page.evaluate(() => localStorage.setItem('unrelated-test-key', 'preserve'));
+  assert.notEqual(await page.evaluate(() => localStorage.getItem('smart-terapy:atelier-estimate:v1')), null);
+  for (const route of ['confidentialitate.html', 'cookies.html']) {
+    for (const width of [360, 1440]) {
+      await page.setViewportSize({ width, height: 1000 });
+      assert((await page.goto(new URL(route, root).href, { waitUntil: 'networkidle' })).ok());
+      assert.match(await page.locator('h1').textContent(), /Politica/);
+      assert.equal(await page.locator('a[href="mailto:contact@smartterapy.ro"]').count() > 0, true);
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+      if (width === 360) await page.screenshot({ path: `artifacts/${route.replace('.html', '')}-mobile.png`, fullPage: true });
+    }
+    record(`${route} loads with contact details and responsive text`);
+  }
+  await page.locator('#clear-preferences').click();
+  assert.match(await page.locator('#preferences-status').textContent(), /șterse/);
+  assert.equal(await page.evaluate(() => localStorage.getItem('smart-terapy:atelier-estimate:v1')), null);
+  assert.equal(await page.evaluate(() => localStorage.getItem('smart-terapy:remember-estimate:v1')), null);
+  assert.equal(await page.evaluate(() => localStorage.getItem('unrelated-test-key')), 'preserve');
+  await page.goto(root.href, { waitUntil: 'networkidle' });
+  assert.equal(await page.locator('#remember-estimate').isChecked(), false);
+  assert.equal(await page.locator('#participants').inputValue(), '12');
+  await page.evaluate(() => localStorage.removeItem('unrelated-test-key'));
+  record('cookie policy clears only owned preferences and disables persistence');
 
   if (expectedCommit) {
     const info = await context.request.get(new URL('build-info.json', root).href);

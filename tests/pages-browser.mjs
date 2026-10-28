@@ -145,6 +145,7 @@ try {
   assert.equal(await page.locator('#therapy-submenu a[href$="#terapii"]').count(), 1);
   recordCheck("desktop therapy menu exposes the overview and nine canonical routes");
 
+  await page.locator("#remember-estimate").check();
   await page.selectOption("#atelier-type", "creativ");
   await page.fill("#participants", "13");
   await page.selectOption("#sessions", "4");
@@ -223,6 +224,26 @@ try {
     therapies.at(-1).title,
   );
   recordCheck("mobile therapy menu scrolls, follows its last route, and closes in two Escape levels", submenuOverflow);
+
+  await gotoOk(page, ROOT_URL.href);
+  await page.locator('.legal-workshop-copy .button').click();
+  assert.equal(page.url(), new URL('ateliere/da-mana-cu-dreptul/', ROOT_URL).href);
+  assert.match(await page.locator('h1').textContent(), /Dă mâna cu Dreptul/);
+  assert((await page.locator('.workshop-topics li').count()) >= 14);
+  const workshopText = await page.locator('main').textContent();
+  assert.match(workshopText, /60–90/);
+  assert.match(workshopText, /7–16/);
+  assert.match(workshopText, /cerere/i);
+  for (const width of [360, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.reload({ waitUntil: 'networkidle' });
+    await assertNoHorizontalOverflow(page, `legal workshop ${width}px`);
+    await page.screenshot({ path: path.join(ARTIFACTS_DIR, `workshop-${width}.png`), fullPage: true });
+  }
+  await page.locator('main a[href="../../#contact"]').first().click();
+  await page.waitForURL(`${ROOT_URL.href}#contact`);
+  assert.equal(await page.locator('#contact-service option[value="Dă mâna cu Dreptul — educație juridică"]').count(), 1);
+  recordCheck('legal workshop page, all themes, responsive layout and contact navigation');
 
   if (EXPECTED_COMMIT) {
     const buildInfoResponse = await context.request.get(new URL("build-info.json", ROOT_URL).href);

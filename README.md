@@ -23,6 +23,8 @@ Calculatorul propune 10% reducere pentru 4 ateliere. Materialele de bază sunt i
 
 Repere publice consultate pentru poziționarea propunerii: [Școala de Joacă](https://scoaladejoaca.ro/ateliere/scoala-altfel-scoala-verde/) afișează 40 lei/copil, iar [Fundația Calea Victoriei](https://www.fundatiacaleavictoriei.ro/scoala-altfel-ateliere-pentru-copii-si-adolescenti/) afișează 50 lei/participant pentru grupe de minimum 20. Aceste oferte au contexte și conținut diferite; nu constituie tarife ale Smart Terapy.
 
+Atelierul de educație juridică **„Dă mâna cu Dreptul”**, descrierea, durata de 60–90 minute, publicul de 7–16 ani, temele și obiectivele au fost furnizate de client. Apare în secțiunea Ateliere și la `ateliere/da-mana-cu-dreptul/`; `content/legal-workshop.html` este inclus în build-ul paginii. Tariful este la cerere și nu este estimat de calculatorul atelierelor creative.
+
 ## Funcționare
 
 Site static, fără servicii backend sau dependențe runtime. Fiecare dintre cele nouă terapii are propria pagină HTML la `terapii/<slug>/`, cu adresă canonică, descriere, direcții de lucru, întrebări frecvente și navigare între servicii. Meniul „Terapii” și cardurile de pe prima pagină duc direct la aceste pagini.
@@ -31,7 +33,7 @@ Site static, fără servicii backend sau dependențe runtime. Fiecare dintre cel
 
 Formularul de contact pregătește local un e-mail către `contact@smartterapy.ro`, cu nume, adresă de răspuns, serviciu opțional și mesaj. Validează câmpurile, oferă link `mailto:` și copiere cu variantă manuală; utilizatorul trimite e-mailul din aplicația sa. Formularul nu afișează confirmări fictive de livrare și nu stochează datele personale în localStorage. `public/contact.js` conține validarea și compunerea mesajului, importate de `public/app.js`. Pentru trimitere directă din browser este necesar ulterior un endpoint configurat; [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages) găzduiește fișiere statice. Publicarea adresei nu creează și nu verifică existența căsuței poștale.
 
-Meniul de terapii folosește un element HTML `details`; JavaScript adaugă închiderea la Escape, click în exterior și selectarea unui link. Pe mobil, lista poate fi derulată fără a depăși înălțimea ecranului. Calculatorul păstrează numai opțiunile nesensibile în localStorage. Copierea mesajului este locală; contactul se realizează manual pe Instagram, fără simularea unei rezervări. Pagina de confidențialitate descrie stocarea locală și găzduirea GitHub Pages.
+Meniul de terapii folosește un element HTML `details`; JavaScript adaugă închiderea la Escape, click în exterior și selectarea unui link. Pe mobil, lista poate fi derulată fără a depăși înălțimea ecranului. Calculatorul păstrează opțiunile nesensibile în localStorage numai dacă vizitatorul bifează explicit salvarea pe dispozitiv. Debifarea ori butonul de ștergere din politica de cookies elimină ambele chei proprii; calculatorul funcționează și fără salvare. Politicile separate `confidentialitate.html` și `cookies.html` descriu funcționarea actuală, operatorul și opțiunile vizitatorului; trebuie actualizate odată cu migrarea pe Hostinger sau conectarea unui serviciu de trimitere. Copierea mesajului este locală; contactul se realizează manual pe Instagram, fără simularea unei rezervări. Pagina de confidențialitate descrie stocarea locală și găzduirea GitHub Pages.
 
 ## Verificare și publicare
 

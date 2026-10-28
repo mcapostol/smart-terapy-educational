@@ -76,5 +76,20 @@ ${sharedPart(template, 'footer', base, item.slug)}
 
 export function renderSitemap(template) {
   if (!template.includes('<!-- SITE_URLS -->')) throw new Error('Sitemap template is missing its URL slot.');
-  return template.replace('<!-- SITE_URLS -->', ['', ...therapies.map(item => `terapii/${item.slug}/`)].map(route => `<url><loc>${SITE_URL}${route}</loc></url>`).join(''));
+  return template.replace('<!-- SITE_URLS -->', ['', 'ateliere/da-mana-cu-dreptul/', ...therapies.map(item => `terapii/${item.slug}/`)].map(route => `<url><loc>${SITE_URL}${route}</loc></url>`).join(''));
+}
+
+export function renderLegalWorkshop(template, content) {
+  const title = 'Dă mâna cu Dreptul — Atelier de educație juridică | Smart Terapy Educational';
+  const description = 'Atelier de educație juridică pentru elevi de 7–16 ani: drepturi, responsabilități și comunicare prin jocuri de rol și activități interactive. Durată: 60–90 minute.';
+  return `<!doctype html>
+<html lang="ro"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${title}</title><meta name="description" content="${description}"><meta name="theme-color" content="#faf7f0">
+<link rel="canonical" href="${SITE_URL}ateliere/da-mana-cu-dreptul/"><meta property="og:title" content="${title}"><meta property="og:description" content="${description}"><meta property="og:type" content="website"><meta property="og:image" content="${SITE_URL}assets/social-card.png">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../../styles.css"><script type="module" src="../../app.js"></script>
+</head><body class="legal-workshop-page"><a class="skip-link" href="#main">Mergi la conținut</a>
+${sharedPart(template, 'header', '../../', '')}
+<main id="main">${content}</main>
+${sharedPart(template, 'footer', '../../', '')}
+</body></html>`;
 }

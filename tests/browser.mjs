@@ -304,6 +304,10 @@ try {
   assert.deepEqual(sessionOptions, ["1", "4"]);
   recordCheck("calculator option contract", { atelierOptions, sessionOptions });
 
+  assert.equal(await page.locator("#remember-estimate").isChecked(), false);
+  assert.equal(await page.evaluate(() => localStorage.getItem("smart-terapy:atelier-estimate:v1")), null);
+  await page.locator("#remember-estimate").check();
+  recordCheck("calculator storage requires an explicit choice");
   await assertEstimate(page, { type: "creativ", participants: 12, sessions: 1, total: 660 });
   await assertEstimate(page, { type: "creativ", participants: 12, sessions: 4, total: 2376 });
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
@@ -338,6 +342,14 @@ try {
   await assertNoHorizontalOverflow(reopenedPage, "mobile screenshot 390px");
   await reopenedPage.screenshot({ path: path.join(ARTIFACTS_DIR, "mobile.png"), fullPage: true });
   recordCheck("mobile screenshot", { path: "artifacts/mobile.png" });
+
+  await reopenedPage.locator("#remember-estimate").uncheck();
+  assert.equal(await reopenedPage.evaluate(() => localStorage.getItem("smart-terapy:atelier-estimate:v1")), null);
+  assert.equal(await reopenedPage.evaluate(() => localStorage.getItem("smart-terapy:remember-estimate:v1")), null);
+  await reopenedPage.reload({ waitUntil: "networkidle" });
+  assert.equal(await reopenedPage.locator("#remember-estimate").isChecked(), false);
+  assert.equal(await reopenedPage.locator("#sessions").inputValue(), "1");
+  recordCheck("withdrawing the storage choice removes preferences and survives reload");
 
   if (EXPECTED_COMMIT) {
     const rootUrl = TARGET_URL.endsWith("/") ? TARGET_URL : `${TARGET_URL}/`;

@@ -1,4 +1,5 @@
 import { CONTACT_EMAIL, buildContactMessage } from "./contact.js";
+import { ESTIMATE_KEY as STORAGE_KEY, getBrowserStorage, hasRememberedChoice, clearCalculatorPreferences, setRememberedChoice } from "./preferences.js";
 
 const WORKSHOPS = Object.freeze({
   creativ: Object.freeze({ label: "Atelier creativ", rate: 55, min: 6, max: 20, unit: "copil" }),
@@ -8,7 +9,6 @@ const WORKSHOPS = Object.freeze({
 });
 
 const DEFAULT_SELECTION = Object.freeze({ type: "creativ", participants: 12, sessions: 1 });
-const STORAGE_KEY = "smart-terapy:atelier-estimate:v1";
 const STORAGE_VERSION = 1;
 
 function parseInteger(value) {
@@ -150,7 +150,7 @@ function setupNavigation() {
 }
 
 function readSavedSelection(storage) {
-  if (!storage) return DEFAULT_SELECTION;
+  if (!hasRememberedChoice(storage)) return DEFAULT_SELECTION;
 
   try {
     const raw = storage.getItem(STORAGE_KEY);
@@ -164,7 +164,7 @@ function readSavedSelection(storage) {
 }
 
 function saveSelection(storage, selection) {
-  if (!storage) return;
+  if (!hasRememberedChoice(storage)) return;
 
   try {
     storage.setItem(STORAGE_KEY, JSON.stringify({
@@ -177,14 +177,6 @@ function saveSelection(storage, selection) {
     }));
   } catch {
     // The estimate remains fully usable when private browsing blocks storage.
-  }
-}
-
-function getStorage() {
-  try {
-    return window.localStorage;
-  } catch {
-    return null;
   }
 }
 
@@ -230,7 +222,22 @@ function setupCalculator() {
   const required = [typeInput, participantsInput, sessionsInput, totalOutput, unitOutput, summaryOutput, errorOutput, messageOutput];
   if (required.some((element) => !element)) return;
 
-  const storage = getStorage();
+  const storage = getBrowserStorage();
+  const rememberInput = document.querySelector("#remember-estimate");
+  const rememberStatus = document.querySelector("#remember-status");
+  if (!hasRememberedChoice(storage)) clearCalculatorPreferences(storage);
+  rememberInput.checked = hasRememberedChoice(storage);
+  rememberInput.addEventListener("change", () => {
+    const updated = setRememberedChoice(storage, rememberInput.checked);
+    if (!updated) {
+      rememberInput.checked = false;
+      setText(rememberStatus, "Salvarea nu este disponibilă în acest browser. Calculatorul poate fi folosit în continuare.");
+    } else {
+      setText(rememberStatus, rememberInput.checked ? "Opțiunile vor fi păstrate pe acest dispozitiv." : "Opțiunile salvate au fost șterse.");
+    }
+  });
+  window.addEventListener("storage", () => { rememberInput.checked = hasRememberedChoice(storage); });
+  window.addEventListener("pageshow", () => { rememberInput.checked = hasRememberedChoice(storage); });
   const saved = readSavedSelection(storage);
   typeInput.value = saved.type;
   participantsInput.value = String(saved.participants);
