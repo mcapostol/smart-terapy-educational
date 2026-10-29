@@ -227,7 +227,7 @@ try {
     assert.equal(await routePage.locator("#cookie-functional").isChecked(), false);
     assert((await routePage.locator("[data-open-consent]").count()) > 0, `${route.label} must expose settings`);
     await assertNoOptionalStorage(routePage);
-    const visibleText = await routePage.locator("body").innerText();
+    const visibleText = (await routePage.locator("body").innerText()).replace(/\s+/g, " ");
     assert.match(visibleText, /Smart Therapy Educational/i);
     assert.doesNotMatch(visibleText, /Smart Terapy Educational/i);
     await routeContext.close();
