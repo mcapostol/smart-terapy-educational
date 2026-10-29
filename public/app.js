@@ -1,3 +1,4 @@
+import { setupConsent } from "./consent.js";
 import { CONTACT_EMAIL, buildContactMessage } from "./contact.js";
 import { ESTIMATE_KEY as STORAGE_KEY, getBrowserStorage, hasRememberedChoice, clearCalculatorPreferences, setRememberedChoice } from "./preferences.js";
 
@@ -196,7 +197,7 @@ function buildRequestMessage(estimate) {
   const sessionLabel = estimate.sessions === 1 ? "1 sesiune" : "4 sesiuni";
 
   return [
-    "Bună! Doresc detalii despre organizarea unui atelier Smart Terapy Educational.",
+    "Bună! Doresc detalii despre organizarea unui atelier Smart Therapy Educational.",
     `Program: ${estimate.label}`,
     `Grup: ${participantLabel}`,
     `Frecvență: ${sessionLabel}`,
@@ -282,6 +283,11 @@ function setupCalculator() {
     saveSelection(storage, result);
   };
 
+  window.addEventListener("consentchange", () => {
+    rememberInput.checked = hasRememberedChoice(storage);
+    render();
+  });
+
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     render();
@@ -334,7 +340,7 @@ function setupCalculator() {
 function setupContactForm() {
   const form = document.querySelector("#contact-form");
   if (!form) return;
-  const fields = Object.fromEntries(["name", "email", "service", "message"].map(name => [name, form.elements.namedItem(name)]));
+  const fields = Object.fromEntries(["name", "email", "service", "message", "agreement"].map(name => [name, form.elements.namedItem(name)]));
   const draft = document.querySelector("#contact-draft");
   const preview = document.querySelector("#contact-preview");
   const emailLink = document.querySelector("#contact-open-email");
@@ -359,7 +365,7 @@ function setupContactForm() {
   form.addEventListener("submit", event => {
     event.preventDefault();
     clearDraft();
-    const result = buildContactMessage(Object.fromEntries(Object.entries(fields).map(([name, field]) => [name, field.value])));
+    const result = buildContactMessage(Object.fromEntries(Object.entries(fields).map(([name, field]) => [name, field.type === "checkbox" ? field.checked : field.value])));
     for (const [name, field] of Object.entries(fields)) {
       const error = result.ok ? "" : result.errors[name] || "";
       field.setAttribute("aria-invalid", String(Boolean(error)));
@@ -392,6 +398,7 @@ function setupContactForm() {
 }
 
 if (typeof document !== "undefined") {
+  setupConsent();
   setupNavigation();
   setupCalculator();
   setupContactForm();

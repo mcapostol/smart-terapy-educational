@@ -79,7 +79,7 @@ test("each therapy page renders its own metadata, heading, nested assets, and ac
     const canonical = `${SITE_URL}terapii/${therapy.slug}/`;
     const activeSidebarLink = `href="../../terapii/${therapy.slug}/" aria-current="page"`;
 
-    assert(html.includes(`<title>${therapy.title} — Smart Terapy Educational</title>`));
+    assert(html.includes(`<title>${therapy.title} — Smart Therapy Educational</title>`));
     assert(html.includes(`<link rel="canonical" href="${canonical}">`));
     assert(html.includes(`<h1 id="therapy-title" data-therapy-title>${therapy.title}</h1>`));
     assert(html.includes('class="breadcrumbs wrap"'));

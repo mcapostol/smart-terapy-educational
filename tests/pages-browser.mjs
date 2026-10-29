@@ -33,6 +33,15 @@ function normalizeText(value) {
   return value.replace(/\s+/g, " ").trim();
 }
 
+async function rejectConsentIfVisible(page) {
+  const dialog = page.locator("#cookie-dialog");
+  if ((await dialog.count()) && (await dialog.isVisible())) {
+    await page.locator("#cookie-reject").click();
+    assert.equal(await dialog.isVisible(), false, "Rejecting optional storage must close the consent dialog");
+    recordCheck("initial consent prompt rejected for pages verification");
+  }
+}
+
 function attachDiagnostics(page, label) {
   page.on("console", (message) => {
     if (message.type() === "error") {
@@ -62,6 +71,7 @@ async function gotoOk(page, url) {
   assert(response, `No navigation response for ${url}`);
   assert(response.ok(), `${url} returned HTTP ${response.status()}`);
   await page.evaluate(() => document.fonts.ready);
+  await rejectConsentIfVisible(page);
 }
 
 async function assertNoHorizontalOverflow(page, label) {
@@ -95,7 +105,7 @@ async function assertTherapyPage(page, therapy) {
   const expectedUrl = therapyUrl(therapy.slug);
   await gotoOk(page, expectedUrl);
   assert.equal(page.url(), expectedUrl);
-  assert.equal(normalizeText(await page.title()), `${therapy.title} — Smart Terapy Educational`);
+  assert.equal(normalizeText(await page.title()), `${therapy.title} — Smart Therapy Educational`);
   assert.equal(normalizeText((await page.locator("h1[data-therapy-title]").textContent()) || ""), therapy.title);
   assert.equal(await page.locator('link[rel="canonical"]').getAttribute("href"), new URL(`terapii/${therapy.slug}/`, SITE_URL).href);
   assert.equal(await page.locator(".therapy-page-nav a").count(), 10);

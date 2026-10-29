@@ -19,4 +19,4 @@ await writeFile('dist/ateliere/da-mana-cu-dreptul/index.html', renderLegalWorksh
 await writeFile('dist/sitemap.xml', renderSitemap(await readFile('public/sitemap.xml', 'utf8')));
 await writeFile('dist/.nojekyll', '');
 await writeFile('dist/build-info.json', JSON.stringify({ commit, builtAt: new Date().toISOString(), therapyPages: therapies.map(item => `terapii/${item.slug}/`), workshopPages: ['ateliere/da-mana-cu-dreptul/'], policyPages: ['confidentialitate.html', 'cookies.html'] }, null, 2));
-console.log(`Built Smart Terapy Educational, ${therapies.length} therapy pages, workshop and policies from ${commit}`);
+console.log(`Built Smart Therapy Educational, ${therapies.length} therapy pages, workshop and policies from ${commit}`);

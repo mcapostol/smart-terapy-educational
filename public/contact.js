@@ -6,7 +6,7 @@ function normalized(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
-export function buildContactMessage({ name, email, service, message } = {}) {
+export function buildContactMessage({ name, email, service, message, agreement } = {}) {
   const fields = {
     name: normalized(name),
     email: normalized(email),
@@ -41,13 +41,17 @@ export function buildContactMessage({ name, email, service, message } = {}) {
     errors.message = 'Mesajul poate avea cel mult 1500 de caractere.';
   }
 
+  if (agreement !== true) {
+    errors.agreement = 'Confirmă acordul pentru a pregăti mesajul.';
+  }
+
   if (Object.keys(errors).length > 0) {
     return { ok: false, errors };
   }
 
   const subject = fields.service
-    ? `Smart Terapy Educational — ${fields.service}`
-    : 'Smart Terapy Educational';
+    ? `Smart Therapy Educational — ${fields.service}`
+    : 'Smart Therapy Educational';
   const body = [
     `Nume: ${fields.name}`,
     `E-mail: ${fields.email}`,
@@ -55,6 +59,8 @@ export function buildContactMessage({ name, email, service, message } = {}) {
     '',
     'Mesaj:',
     fields.message,
+    '',
+    'Am citit Politica de confidențialitate și sunt de acord să fiu contactat(ă) pentru această solicitare.',
   ].join('\n');
 
   return { ok: true, subject, body };

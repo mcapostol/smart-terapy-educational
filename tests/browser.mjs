@@ -66,15 +66,25 @@ function normalizeText(value) {
   return value.replace(/\s+/g, " ").trim();
 }
 
+async function rejectConsentIfVisible(page) {
+  const dialog = page.locator("#cookie-dialog");
+  if ((await dialog.count()) && (await dialog.isVisible())) {
+    await page.locator("#cookie-reject").click();
+    assert.equal(await dialog.isVisible(), false, "Rejecting optional storage must close the consent dialog");
+    recordCheck("initial consent prompt rejected for browser verification");
+  }
+}
+
 async function openSite(page) {
   const response = await page.goto(TARGET_URL, { waitUntil: "networkidle" });
   assert(response, `No navigation response for ${TARGET_URL}`);
   assert(response.ok(), `Navigation failed with HTTP ${response.status()} at ${TARGET_URL}`);
   await page.evaluate(() => document.fonts.ready);
+  await rejectConsentIfVisible(page);
   assert.match(
     normalizeText(await page.title()),
-    /smart terapy educational/i,
-    "The page title must include Smart Terapy Educational",
+    /smart therapy educational/i,
+    "The page title must include Smart Therapy Educational",
   );
 }
 
@@ -93,7 +103,7 @@ async function assertNoHorizontalOverflow(page, label) {
 
 async function assertTherapyContent(page) {
   const brandText = normalizeText((await page.locator(".site-header .brand").textContent()) || "");
-  assert.equal(brandText.toLocaleLowerCase("ro"), "smart terapy educational");
+  assert.equal(brandText.toLocaleLowerCase("ro"), "smart therapy educational");
 
   const therapySection = page.locator("#terapii");
   assert.equal(await therapySection.count(), 1, "The #terapii section must exist exactly once");

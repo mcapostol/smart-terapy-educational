@@ -58,3 +58,29 @@
 
 .workshop-tags>span{padding:6px 11px;border:1px solid #c7cdbb;border-radius:5px;font-size:12px;color:var(--green);background:#faf7f080}.workshop-lead{font-size:18px;line-height:1.9;color:var(--muted);max-width:850px}.privacy code{overflow-wrap:anywhere;font-size:.9em}.privacy details{margin:20px 0;padding:18px;background:var(--sage);border-radius:5px}.privacy details summary{cursor:pointer;font-size:14px;font-weight:600}.privacy details p{margin:16px 0 0}.privacy [role="status"]:empty{display:none}
 @media(max-width:650px){.workshop-lead{font-size:16px}}
+
+/* Consent controls share the same hierarchy on mobile and desktop. */
+.cookie-settings{font:inherit;color:inherit;border:0;padding:0;background:transparent;text-align:left;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.cookie-dialog{border:1px solid var(--line);border-radius:18px;padding:34px;width:min(620px,calc(100% - 32px));max-height:calc(100dvh - 32px);margin:auto;background:var(--paper);color:var(--ink);box-shadow:0 24px 90px #22362833;overflow:auto;overscroll-behavior:contain}
+.cookie-dialog::backdrop{background:rgba(24,40,29,.48)}
+.cookie-dialog .eyebrow{padding-right:24px;font-size:10px;margin:0 0 12px}
+.cookie-dialog h2{font-size:38px;line-height:1.12;margin:0 0 18px}
+.cookie-dialog p{font-size:14px;line-height:1.65;margin:0 0 16px}
+.cookie-close{position:absolute;right:14px;top:12px;width:38px;height:38px;border:0;border-radius:50%;font:26px/1 sans-serif;cursor:pointer;color:var(--ink);background:transparent}
+.cookie-essential{display:grid;grid-template-columns:1fr auto;gap:4px 12px;border-block:1px solid var(--line);padding:14px 0;font-size:14px;font-weight:600}
+.cookie-essential small{grid-column:1;grid-row:2;font-size:12px;line-height:1.6;font-weight:400;color:var(--muted)}
+.cookie-essential strong{grid-column:2;grid-row:1 / 3;align-self:center;font-size:11px;color:var(--green)}
+.cookie-option{display:flex;gap:12px;align-items:flex-start;padding:18px 0;cursor:pointer;font-size:14px;line-height:1.6}
+.cookie-option input,.contact-form-panel .contact-agreement input{width:20px;height:20px;min-height:20px;flex:0 0 20px;margin:2px 0 0;padding:0;accent-color:var(--green)}
+.cookie-option small{display:block;font-size:12px;color:var(--muted)}
+.cookie-links{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:12px;margin-bottom:22px}
+.cookie-links a,.contact-agreement a{text-decoration:underline;text-underline-offset:3px}
+.cookie-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cookie-actions .button{justify-content:center;font-size:13px;min-height:46px;padding:12px 10px;white-space:normal;text-align:center}
+.cookie-actions #cookie-save{grid-column:1 / -1}
+.cookie-dialog .cookie-note{font-size:11px;color:var(--muted);margin:16px 0 0}
+.cookie-dialog #cookie-status{font-size:12px;color:#963b2e;margin:12px 0 0}.cookie-dialog #cookie-status:empty{display:none}
+.contact-form-panel .contact-agreement{display:flex;align-items:flex-start;gap:11px;font-size:12px;line-height:1.8;font-weight:400;margin:8px 0 12px;cursor:pointer}
+#contact-agreement-error{margin-bottom:12px}
+.cookie-dialog :focus-visible,.cookie-settings:focus-visible,.contact-agreement input:focus-visible{outline:3px solid #a66239;outline-offset:4px}
+@media(max-width:480px){.cookie-dialog{padding:26px 20px;border-radius:14px}.cookie-dialog h2{font-size:30px}.cookie-dialog .eyebrow{font-size:9px}.cookie-essential{grid-template-columns:1fr}.cookie-essential strong{grid-column:1;grid-row:3}.cookie-actions{gap:8px}.cookie-actions .button{font-size:12px}.cookie-dialog p{font-size:13px}}

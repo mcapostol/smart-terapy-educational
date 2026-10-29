@@ -19,6 +19,14 @@ const browser = await chromium.launch({
   ].join(':') },
 });
 const record = name => checks.push({ name, status: 'passed' });
+const rejectConsentIfVisible = async page => {
+  const dialog = page.locator('#cookie-dialog');
+  if ((await dialog.count()) && (await dialog.isVisible())) {
+    await page.locator('#cookie-reject').click();
+    assert.equal(await dialog.isVisible(), false, 'Rejecting optional storage must close the consent dialog');
+    record('initial consent prompt rejected for contact verification');
+  }
+};
 try {
   await mkdir('artifacts', { recursive: true });
   const context = await browser.newContext({ permissions: ['clipboard-read', 'clipboard-write'] });
@@ -29,6 +37,7 @@ try {
   page.on('response', response => { if (response.status() >= 400) failures.push(`${response.status()} ${response.url()}`); });
   assert((await page.goto(root.href, { waitUntil: 'networkidle' })).ok());
   await page.evaluate(() => document.fonts.ready);
+  await rejectConsentIfVisible(page);
   assert.equal(await page.locator('#contact-service option').count(), 14);
   assert.equal(await page.locator('#contact-draft').isVisible(), false);
 
@@ -53,6 +62,7 @@ try {
   assert.equal(await page.locator('#contact-name').getAttribute('aria-invalid'), 'true');
   assert.equal(await page.locator('#contact-email').getAttribute('aria-invalid'), 'true');
   assert.equal(await page.locator('#contact-message').getAttribute('aria-invalid'), 'true');
+  assert.equal(await page.locator('#contact-agreement').getAttribute('aria-invalid'), 'true');
   assert.equal(await page.locator('#contact-draft').isVisible(), false);
   await page.fill('#contact-name', 'Ioana Ștefan');
   await page.fill('#contact-email', 'email-invalid');
@@ -64,6 +74,12 @@ try {
   record('required and invalid fields prevent email preparation');
 
   await page.fill('#contact-email', 'ioana+test@example.com');
+  await submit.click();
+  assert.equal(await page.locator('#contact-agreement').getAttribute('aria-invalid'), 'true');
+  assert.equal(await page.locator('#contact-draft').isVisible(), false);
+  record('otherwise valid contact form still requires explicit agreement');
+
+  await page.locator('#contact-agreement').check();
   await submit.click();
   assert.equal(await page.locator('#contact-draft').isVisible(), true);
   const uri = new URL(await page.locator('#contact-open-email').getAttribute('href'));

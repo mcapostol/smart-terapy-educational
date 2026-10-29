@@ -4,10 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/app.test.mjs tests/pages.test.mjs tests/contact.test.mjs",
+    "test": "node --test tests/app.test.mjs tests/pages.test.mjs tests/contact.test.mjs tests/preferences.test.mjs",
     "build": "node scripts/build.mjs",
     "verify:browser": "node tests/browser.mjs",
     "verify:pages": "node tests/pages-browser.mjs",
+    "verify:consent": "node tests/consent-browser.mjs",
     "verify:contact": "node tests/contact-browser.mjs"
   },
   "devDependencies": { "@playwright/test": "1.58.2" }

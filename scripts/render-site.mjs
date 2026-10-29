@@ -41,7 +41,7 @@ function sharedPart(template, tag, base, currentSlug) {
 export function renderTherapyPage(item, template) {
   const base = '../../';
   const url = `${SITE_URL}terapii/${item.slug}/`;
-  const title = `${item.title} — Smart Terapy Educational`;
+  const title = `${item.title} — Smart Therapy Educational`;
   const otherTherapies = therapies.filter(other => other.slug !== item.slug);
   return `<!doctype html>
 <html lang="ro"><head>
@@ -56,7 +56,7 @@ ${sharedPart(template, 'header', base, item.slug)}
 <main id="main">
   <nav class="breadcrumbs wrap" aria-label="Traseu în site"><a href="${base}">Acasă</a><span aria-hidden="true">/</span><a href="${base}#terapii">Terapii</a><span aria-hidden="true">/</span><span aria-current="page">${escape(item.shortTitle)}</span></nav>
   <section class="therapy-detail-hero wrap" aria-labelledby="therapy-title">
-    <div><p class="eyebrow">SMART TERAPY EDUCATIONAL · ${escape(item.category)}</p><h1 id="therapy-title" data-therapy-title>${escape(item.title)}</h1>${item.fullName ? `<p class="detail-fullname">${escape(item.fullName)}</p>` : ''}<p class="detail-lead">${escape(item.summary)}</p><a class="button" href="${base}#contact">Discută cu echipa <span aria-hidden="true">↗</span></a></div>
+    <div><p class="eyebrow">SMART THERAPY EDUCATIONAL · ${escape(item.category)}</p><h1 id="therapy-title" data-therapy-title>${escape(item.title)}</h1>${item.fullName ? `<p class="detail-fullname">${escape(item.fullName)}</p>` : ''}<p class="detail-lead">${escape(item.summary)}</p><a class="button" href="${base}#contact">Discută cu echipa <span aria-hidden="true">↗</span></a></div>
     <aside class="detail-hero-note"><span class="detail-symbol" aria-hidden="true">✳</span><p>Fiecare copil,<br><em>în ritmul său.</em></p><span>Comunicare. Încredere. Pași mici.</span></aside>
   </section>
   <div class="therapy-detail-layout wrap">
@@ -80,7 +80,7 @@ export function renderSitemap(template) {
 }
 
 export function renderLegalWorkshop(template, content) {
-  const title = 'Dă mâna cu Dreptul — Atelier de educație juridică | Smart Terapy Educational';
+  const title = 'Dă mâna cu Dreptul — Atelier de educație juridică | Smart Therapy Educational';
   const description = 'Atelier de educație juridică pentru elevi de 7–16 ani: drepturi, responsabilități și comunicare prin jocuri de rol și activități interactive. Durată: 60–90 minute.';
   return `<!doctype html>
 <html lang="ro"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
